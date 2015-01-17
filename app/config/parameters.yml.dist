@@ -30,11 +30,11 @@ parameters:
     paypal.express_checkout.signature: EDITME
     paypal.express_checkout.sandbox: true
 
-    authorize.apiLoginId: 3rPEs9kyzQ7n
-    authorize.transactionKey: 8r778jHAmuW4hU3S
+    authorize.apiLoginId: EDITME
+    authorize.transactionKey: EDITME
 
-    payment_sense.merchantId: VERTIG-4953379
-    payment_sense.password: 0316IHZEWN
+    payment_sense.merchantId: EDITME
+    payment_sense.password: EDITME
 
     stripe.publishable_key: EDITME
     stripe.secret_key: EDITME
