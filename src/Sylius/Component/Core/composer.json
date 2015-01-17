@@ -1,0 +1,61 @@
+{
+    "name": "sylius/core",
+    "type": "library",
+    "description": "Sylius e-commerce core. It integrates all components.",
+    "keywords": ["shop", "ecommerce", "core", "store", "sylius"],
+    "homepage": "http://sylius.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paweł Jędrzejewski",
+            "homepage": "http://pjedrzejewski.com"
+        },
+        {
+            "name": "Sylius project",
+            "homepage": "http://sylius.org"
+        },
+        {
+            "name": "Community contributions",
+            "homepage": "http://github.com/Sylius/Sylius/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+
+        "sylius/product":    "0.12.*@dev",
+        "sylius/cart":       "0.12.*@dev",
+        "sylius/order":      "0.12.*@dev",
+        "sylius/currency":   "0.12.*@dev",
+        "sylius/locale":     "0.12.*@dev",
+        "sylius/taxation":   "0.12.*@dev",
+        "sylius/shipping":   "0.12.*@dev",
+        "sylius/addressing": "0.12.*@dev",
+        "sylius/promotion":  "0.12.*@dev",
+        "sylius/inventory":  "0.12.*@dev",
+        "sylius/taxonomy":   "0.12.*@dev",
+        "sylius/payment":    "0.12.*@dev",
+        "sylius/pricing":    "0.12.*@dev",
+        "sylius/resource":   "0.12.*@dev",
+
+        "knplabs/gaufrette": "*@dev"
+    },
+    "require-dev": {
+        "phpspec/phpspec":              "~2.0",
+        "friendsofsymfony/user-bundle": "2.0.*@dev"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-4": { "Sylius\\Component\\Core\\": "" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Sylius\\Component\\Core\\spec\\": "spec/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.12-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}

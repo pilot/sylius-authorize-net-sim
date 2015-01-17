@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ This file is part of the Sylius package.
+
+ (c) Paweł Jędrzejewski
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+
+-->
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+                               http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="sylius.listener.order_update.class">Sylius\Bundle\OrderBundle\EventListener\OrderUpdateListener</parameter>
+        <parameter key="sylius.callback.complete_order.class">Sylius\Bundle\OrderBundle\StateMachineCallback\CompleteOrderCallback</parameter>
+
+        <parameter key="sylius.originator.class">Sylius\Component\Originator\Originator\Originator</parameter>
+    </parameters>
+
+    <services>
+        <service id="sylius.controller.comment" class="%sylius.controller.comment.class%">
+            <argument>sylius</argument>
+            <argument>comment</argument>
+            <argument>SyliusOrderBundle:Comment</argument>
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <service id="sylius.form.type.adjustment" class="%sylius.form.type.adjustment.class%">
+            <argument>%sylius.model.adjustment.class%</argument>
+            <argument>%sylius.validation_group.adjustment%</argument>
+            <tag name="form.type" alias="sylius_adjustment" />
+        </service>
+        <service id="sylius.form.type.comment" class="%sylius.form.type.comment.class%">
+            <argument>%sylius.model.comment.class%</argument>
+            <argument>%sylius.validation_group.comment%</argument>
+            <tag name="form.type" alias="sylius_comment" />
+        </service>
+        <service id="sylius.form.type.order" class="%sylius.form.type.order.class%">
+            <argument>%sylius.model.order.class%</argument>
+            <argument>%sylius.validation_group.order%</argument>
+            <tag name="form.type" alias="sylius_order" />
+        </service>
+        <service id="sylius.form.type.order_item" class="%sylius.form.type.order_item.class%">
+            <argument>%sylius.model.order_item.class%</argument>
+            <argument>%sylius.validation_group.order_item%</argument>
+            <tag name="form.type" alias="sylius_order_item" />
+        </service>
+
+        <service id="sylius.originator" class="%sylius.originator.class%">
+            <argument type="service" id="doctrine" />
+        </service>
+
+        <service id="sylius.callback.complete_order" class="%sylius.callback.complete_order.class%" />
+
+        <service id="sylius.listener.order_update" class="%sylius.listener.order_update.class%">
+            <tag name="kernel.event_listener" event="sylius.order.pre_update" method="recalculateOrderTotal" />
+        </service>
+    </services>
+</container>

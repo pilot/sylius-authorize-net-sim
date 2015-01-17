@@ -1,0 +1,18 @@
+#!/bin/bash
+
+EXIT_STATUS=0
+
+bin/behat --suite=orders -fprogress || EXIT_STATUS=$?
+bin/behat --suite=payments -fprogress || EXIT_STATUS=$?
+bin/behat --suite=pricing -fprogress || EXIT_STATUS=$?
+bin/behat --suite=products -fprogress || EXIT_STATUS=$?
+bin/behat --suite=promotions -fprogress || EXIT_STATUS=$?
+bin/behat --suite=settings -fprogress || EXIT_STATUS=$?
+bin/behat --suite=shipping -fprogress || EXIT_STATUS=$?
+bin/behat --suite=taxation -fprogress || EXIT_STATUS=$?
+bin/behat --suite=taxonomies -fprogress || EXIT_STATUS=$?
+bin/behat --suite=users -fprogress || EXIT_STATUS=$?
+
+#bin/behat --stop-on-failure --suite=javascript || EXIT_STATUS=$?
+
+exit $EXIT_STATUS

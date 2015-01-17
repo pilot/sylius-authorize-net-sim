@@ -1,0 +1,53 @@
+{
+    "name": "sylius/payum-bundle",
+    "type": "symfony-bundle",
+    "description": "Payum integration for Symfony2 e-commerce applications.",
+    "keywords": ["payments", "payment", "payum"],
+    "homepage": "http://sylius.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name":     "Paweł Jędrzejewski",
+            "homepage": "http://pjedrzejewski.com"
+        },
+        {
+            "name":     "Kotlyar Maksim",
+            "email":    "kotlyar.maksim@gmail.com"
+        },
+        {
+            "name":     "Sylius project",
+            "homepage": "http://sylius.org"
+        },
+        {
+            "name":     "Community contributions",
+            "homepage": "http://github.com/Sylius/Sylius/contributors"
+        }
+    ],
+    "require": {
+        "php":                    ">=5.3.3",
+
+        "sylius/core":            "0.12.*@dev",
+        "sylius/currency":        "0.12.*@dev",
+        "sylius/order-bundle":    "0.12.*@dev",
+        "sylius/payment-bundle":  "0.12.*@dev",
+        "sylius/resource-bundle": "0.12.*@dev",
+        "payum/core":             "~0.12.0",
+        "payum/payum-bundle":     "~0.12.0",
+        "winzou/state-machine":   "~0.1"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-4": { "Sylius\\Bundle\\PayumBundle\\": "" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Sylius\\Bundle\\PayumBundle\\spec\\": "spec/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.12-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}
