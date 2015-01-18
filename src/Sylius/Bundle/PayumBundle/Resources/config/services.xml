@@ -52,6 +52,7 @@
         </service>
 
         <service id="sylius.payum.authorize.action.capture_payment_using_sim" class="%sylius.payum.authorize.action.capture_payment_using_sim.class%" public="false">
+            <argument type="service" id="payum.security.token_factory" />
             <call method="setRequest">
                 <argument type="service" id="request" on-invalid="null" strict="false" />
             </call>

@@ -30,6 +30,19 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
     protected $httpRequest;
 
     /**
+    * @var GenericTokenFactoryInterface
+    */
+    protected $tokenFactory;
+
+    /**
+    * @param GenericTokenFactoryInterface $tokenFactory
+    */
+    public function __construct(GenericTokenFactoryInterface $tokenFactory)
+    {
+        $this->tokenFactory = $tokenFactory;
+    }
+
+    /**
      * @param Request $request
      */
     public function setRequest(Request $request = null)
@@ -60,6 +73,10 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
 
         $payment->setDetails(array(
             'x_amount' => number_format($order->getTotal() / 100, 2),
+            'x_relay_url' => $this->tokenFactory->createNotifyToken(
+                $token->getPaymentName(),
+                $payment
+            )->getTargetUrl(),
             'x_currency_code' => $order->getCurrency(),
         ));
     }
