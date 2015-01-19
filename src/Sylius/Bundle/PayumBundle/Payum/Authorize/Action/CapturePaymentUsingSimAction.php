@@ -71,12 +71,14 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
 
         $order = $payment->getOrder();
 
+        $returnUrl = $this->tokenFactory->createNotifyToken(
+            $token->getPaymentName(),
+            $payment
+        )->getTargetUrl();
+
         $payment->setDetails(array(
             'x_amount' => number_format($order->getTotal() / 100, 2),
-            'x_relay_url' => $this->tokenFactory->createNotifyToken(
-                $token->getPaymentName(),
-                $payment
-            )->getTargetUrl(),
+            'x_relay_url' => 'http://sim.451f.com.ua/payment/notify/unsafe/authorize_sim',
             'x_currency_code' => $order->getCurrency(),
         ));
     }
