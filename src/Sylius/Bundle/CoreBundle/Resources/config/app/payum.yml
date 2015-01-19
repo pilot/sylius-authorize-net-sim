@@ -24,7 +24,7 @@ payum:
                     testMode: %payum.test_mode%
                 actions:
                     - sylius.payum.authorize.action.capture_payment_using_credit_card
-                    - sylius.payum.action.payment_status
+                    - sylius.payum.authorize.action.payment_status
                     - sylius.payum.action.execute_same_request_with_payment_details
 
         authorize_aim:

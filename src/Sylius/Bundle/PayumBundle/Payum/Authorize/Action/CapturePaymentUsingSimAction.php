@@ -78,8 +78,7 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
 
         $payment->setDetails(array(
             'x_amount' => number_format($order->getTotal() / 100, 2),
-            'x_relay_url' => 'http://sim.451f.com.ua/payment/notify/unsafe/authorize_sim',
-            'x_currency_code' => $order->getCurrency(),
+            'x_relay_url' => 'http://sim.451f.com.ua/app_dev.php/payment/notify/unsafe/authorize_sim',
             'x_po_num' => $payment->getId(),
         ));
     }

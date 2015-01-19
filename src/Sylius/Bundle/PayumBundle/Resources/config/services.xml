@@ -20,6 +20,7 @@
         <parameter key="sylius.payum.authorize.action.capture_payment_using_credit_card.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\CapturePaymentUsingCreditCardAction</parameter>
         <parameter key="sylius.payum.authorize.action.capture_payment_using_sim.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\CapturePaymentUsingSimAction</parameter>
         <parameter key="sylius.payum.authorize.action.notify.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\NotifyAction</parameter>
+        <parameter key="sylius.payum.authorize.action.payment_status.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\StatusAction</parameter>
 
         <parameter key="sylius.payum.payment_sense.action.capture_payment_using_credit_card.class">Sylius\Bundle\PayumBundle\Payum\PaymentSense\Action\CapturePaymentUsingCreditCardAction</parameter>
 
@@ -67,6 +68,10 @@
             <argument>id</argument>
 
             <tag name="payum.action" factory="authorize_net_sim" />
+        </service>
+
+        <service id="sylius.payum.authorize.action.payment_status" class="%sylius.payum.authorize.action.payment_status.class%" public="false">
+            <tag name="payum.action" all="true" />
         </service>
 
         <!-- PaymentSense -->

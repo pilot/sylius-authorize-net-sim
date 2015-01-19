@@ -104,8 +104,6 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         $this->updatePaymentState($payment, $nextState);
 
         $this->objectManager->flush();
-
-        throw new HttpResponse(new Response('OK', 200));
     }
 
     /**
