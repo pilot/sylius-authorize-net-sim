@@ -76,13 +76,13 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         }
 
         $this->payment->execute($httpRequest = new GetHttpRequest());
-        $details = $httpRequest->query;
+        $details = $httpRequest->request;
 
-        // if (empty($details['ORDERID'])) {
-        //     throw new BadRequestHttpException('Order id cannot be guessed');
-        // }
-        //
-        // $payment = $this->paymentRepository->findOneBy(array($this->identifier => $details['ORDERID']));
+        if (empty($details['x_po_num'])) {
+            throw new BadRequestHttpException('Order id cannot be guessed');
+        }
+
+        $payment = $this->paymentRepository->findOneBy(array($this->identifier => $details['x_po_num']));
 
         if (null === $payment) {
             throw new BadRequestHttpException('Paymenet cannot be retrieved.');
