@@ -16,6 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @author Alex Demchenko <pilo.uanic@gmail.com>
@@ -47,12 +48,18 @@ class NotifyAction extends AbstractPaymentStateAwareAction
      */
     protected $identifier;
 
+    /**
+    * @var Session
+    */
+    protected $session;
+
     public function __construct(
         RepositoryInterface $paymentRepository,
         EventDispatcherInterface $eventDispatcher,
         ObjectManager $objectManager,
         FactoryInterface $factory,
-        $identifier
+        $identifier,
+        Session $session
     ) {
         parent::__construct($factory);
 
@@ -60,6 +67,7 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         $this->eventDispatcher   = $eventDispatcher;
         $this->objectManager     = $objectManager;
         $this->identifier        = $identifier;
+        $this->session           = $session;
     }
 
     /**
@@ -110,6 +118,11 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         $this->updatePaymentState($payment, $nextState);
 
         $this->objectManager->flush();
+
+        $this->session->getBag('flashes')->add(
+            'success',
+            'sylius.checkout.success'
+        );
 
         throw new HttpRedirect($this->httpRequest->getSchemeAndHttpHost());
     }
