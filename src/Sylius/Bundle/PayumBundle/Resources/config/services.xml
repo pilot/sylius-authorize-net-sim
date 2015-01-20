@@ -53,19 +53,22 @@
         </service>
 
         <service id="sylius.payum.authorize.action.capture_payment_using_sim" class="%sylius.payum.authorize.action.capture_payment_using_sim.class%" public="false">
-            <argument type="service" id="payum.security.token_factory" />
             <call method="setRequest">
                 <argument type="service" id="request" on-invalid="null" strict="false" />
             </call>
 
             <tag name="payum.action" factory="authorize_net_sim" />
         </service>
+
         <service id="sylius.payum.authorize.action.notify" class="%sylius.payum.authorize.action.notify.class%" public="false">
             <argument type="service" id="sylius.repository.payment" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="sylius.manager.payment" />
             <argument type="service" id="sm.factory" />
             <argument>id</argument>
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
 
             <tag name="payum.action" factory="authorize_net_sim" />
         </service>

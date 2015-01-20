@@ -1,14 +1,5 @@
 <?php
 
-/*
-* This file is part of the Sylius package.
-*
-* (c) Paweł Jędrzejewski
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
-
 namespace Sylius\Bundle\PayumBundle\Payum\Authorize\Action;
 
 use Doctrine\Common\Persistence\ObjectManager;
@@ -16,12 +7,14 @@ use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\Notify;
+use Payum\Core\Reply\HttpRedirect;
 use SM\Factory\FactoryInterface;
 use Sylius\Bundle\PayumBundle\Payum\Action\AbstractPaymentStateAwareAction;
 use Sylius\Bundle\PayumBundle\Payum\Request\GetStatus;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -29,6 +22,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class NotifyAction extends AbstractPaymentStateAwareAction
 {
+    /**
+    * @var Request
+    */
+    protected $httpRequest;
+
     /**
      * @var RepositoryInterface
      */
@@ -65,6 +63,14 @@ class NotifyAction extends AbstractPaymentStateAwareAction
     }
 
     /**
+    * @param Request $request
+    */
+    public function setRequest(Request $request = null)
+    {
+        $this->httpRequest = $request;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param $request Notify
@@ -88,7 +94,7 @@ class NotifyAction extends AbstractPaymentStateAwareAction
             throw new BadRequestHttpException('Paymenet cannot be retrieved.');
         }
 
-        if ((int) $details['x_amount'] !== $payment->getAmount()) {
+        if (intval(strval($details['x_amount']*100)) !== $payment->getAmount()) {
             throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
         }
 
@@ -104,6 +110,8 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         $this->updatePaymentState($payment, $nextState);
 
         $this->objectManager->flush();
+
+        throw new HttpRedirect($this->httpRequest->getSchemeAndHttpHost());
     }
 
     /**

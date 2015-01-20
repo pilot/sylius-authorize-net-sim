@@ -19,31 +19,31 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (null === $model['response_code']) {
+        if (null === $model['x_response_code']) {
             $request->markNew();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::APPROVED == $model['response_code']) {
+        if (\AuthorizeNetAIM_Response::APPROVED == $model['x_response_code']) {
             $request->markCaptured();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::DECLINED == $model['response_code']) {
+        if (\AuthorizeNetAIM_Response::DECLINED == $model['x_response_code']) {
             $request->markCanceled();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::ERROR == $model['response_code']) {
+        if (\AuthorizeNetAIM_Response::ERROR == $model['x_response_code']) {
             $request->markFailed();
 
             return;
         }
 
-        if (\AuthorizeNetAIM_Response::HELD == $model['response_code']) {
+        if (\AuthorizeNetAIM_Response::HELD == $model['x_response_code']) {
             $request->markPending();
 
             return;

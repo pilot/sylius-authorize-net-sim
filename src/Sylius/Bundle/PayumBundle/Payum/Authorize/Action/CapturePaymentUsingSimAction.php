@@ -30,19 +30,6 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
     protected $httpRequest;
 
     /**
-    * @var GenericTokenFactoryInterface
-    */
-    protected $tokenFactory;
-
-    /**
-    * @param GenericTokenFactoryInterface $tokenFactory
-    */
-    public function __construct(GenericTokenFactoryInterface $tokenFactory)
-    {
-        $this->tokenFactory = $tokenFactory;
-    }
-
-    /**
      * @param Request $request
      */
     public function setRequest(Request $request = null)
@@ -71,14 +58,9 @@ class CapturePaymentUsingSimAction extends AbstractCapturePaymentAction
 
         $order = $payment->getOrder();
 
-        $returnUrl = $this->tokenFactory->createNotifyToken(
-            $token->getPaymentName(),
-            $payment
-        )->getTargetUrl();
-
         $payment->setDetails(array(
             'x_amount' => number_format($order->getTotal() / 100, 2),
-            'x_relay_url' => 'http://sim.451f.com.ua/app_dev.php/payment/notify/unsafe/authorize_sim',
+            'x_relay_url' => $this->httpRequest->getSchemeAndHttpHost().'/payment/notify/unsafe/authorize_sim',
             'x_po_num' => $payment->getId(),
         ));
     }
