@@ -16,7 +16,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * @author Alex Demchenko <pilo.uanic@gmail.com>
@@ -49,9 +50,15 @@ class NotifyAction extends AbstractPaymentStateAwareAction
     protected $identifier;
 
     /**
-    * @var Session
+    * @var SessionInterface
     */
     protected $session;
+
+    /**
+    * @var TranslatorInterface
+    */
+    protected $translator;
+
 
     public function __construct(
         RepositoryInterface $paymentRepository,
@@ -59,7 +66,8 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         ObjectManager $objectManager,
         FactoryInterface $factory,
         $identifier,
-        Session $session
+        SessionInterface $session,
+        TranslatorInterface $translator
     ) {
         parent::__construct($factory);
 
@@ -68,6 +76,7 @@ class NotifyAction extends AbstractPaymentStateAwareAction
         $this->objectManager     = $objectManager;
         $this->identifier        = $identifier;
         $this->session           = $session;
+        $this->translator        = $translator;
     }
 
     /**
@@ -119,10 +128,7 @@ class NotifyAction extends AbstractPaymentStateAwareAction
 
         $this->objectManager->flush();
 
-        $this->session->getBag('flashes')->add(
-            'success',
-            'sylius.checkout.success'
-        );
+        $this->addFlash($nextState);
 
         throw new HttpRedirect($this->httpRequest->getSchemeAndHttpHost());
     }
@@ -133,5 +139,46 @@ class NotifyAction extends AbstractPaymentStateAwareAction
     public function supports($request)
     {
         return $request instanceof Notify;
+    }
+
+    public function addFlash($state)
+    {
+        switch ($state) {
+            case 'completed':
+            $type = 'success';
+            $message = 'sylius.checkout.success';
+            break;
+
+            case 'processing':
+            case 'pending':
+            $type = 'notice';
+            $message = 'sylius.checkout.processing';
+            break;
+
+            case 'new':
+            $type = 'notice';
+            $message = 'sylius.checkout.new';
+            break;
+
+            case 'void':
+            $type = 'notice';
+            $message = 'sylius.checkout.canceled';
+            break;
+
+            case 'failed':
+            $type = 'error';
+            $message = 'sylius.checkout.failed';
+            break;
+
+            default:
+            $type = 'error';
+            $message = 'sylius.checkout.unknown';
+            break;
+        }
+
+        return $this->session->getBag('flashes')->add(
+            $type,
+            $this->translator->trans($message, array(), 'flashes')
+        );
     }
 }

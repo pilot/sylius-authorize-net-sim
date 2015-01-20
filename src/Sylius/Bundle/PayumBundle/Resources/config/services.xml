@@ -67,6 +67,7 @@
             <argument type="service" id="sm.factory" />
             <argument>id</argument>
             <argument type="service" id="session" />
+            <argument type="service" id="translator" />
 
             <call method="setRequest">
                 <argument type="service" id="request" on-invalid="null" strict="false" />
