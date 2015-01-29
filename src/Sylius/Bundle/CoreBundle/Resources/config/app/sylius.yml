@@ -130,7 +130,6 @@ sylius_payment:
         be2bill: Be2Bill
         stripe_checkout: Stripe Checkout
         paypal_express_checkout: Paypal Express Checkout
-        authorize: Autorize.Net SIM OMNI
         authorize_aim: Autorize.Net AIM
         authorize_sim: Autorize.Net SIM
         payment_sense: PaymentSense

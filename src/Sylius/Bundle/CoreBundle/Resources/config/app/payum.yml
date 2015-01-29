@@ -15,18 +15,6 @@ payum:
                 signature: %paypal.express_checkout.signature%
                 sandbox:   %paypal.express_checkout.sandbox%
 
-        authorize:
-            omnipay:
-                type: AuthorizeNet_SIM
-                options:
-                    apiLoginId: %authorize.apiLoginId%
-                    transactionKey: %authorize.transactionKey%
-                    testMode: %payum.test_mode%
-                actions:
-                    - sylius.payum.authorize.action.capture_payment_using_credit_card
-                    - sylius.payum.authorize.action.payment_status
-                    - sylius.payum.action.execute_same_request_with_payment_details
-
         authorize_aim:
             authorize_net_aim:
                 login_id: %authorize.apiLoginId%
