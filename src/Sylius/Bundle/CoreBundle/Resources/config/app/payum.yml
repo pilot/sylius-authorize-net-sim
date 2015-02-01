@@ -27,17 +27,30 @@ payum:
                 transaction_key: %authorize.transactionKey%
                 sandbox: %payum.test_mode%
 
+        # payment_sense:
+        #     omnipay:
+        #         type: PaymentSense
+        #         options:
+        #             merchantId: %payment_sense.merchantId%
+        #             password: %payment_sense.password%
+        #             testMode: %payum.test_mode%
+        #         actions:
+        #             - sylius.payum.payment_sense.action.capture_payment_using_credit_card
+        #             - sylius.payum.action.payment_status
+        #             - sylius.payum.action.execute_same_request_with_payment_details
+
         payment_sense:
-            omnipay:
-                type: PaymentSense
+            payment_sense:
                 options:
-                    merchantId: %payment_sense.merchantId%
+                    merchant_id: %payment_sense.merchantId%
                     password: %payment_sense.password%
-                    testMode: %payum.test_mode%
+                    sandbox: %payum.test_mode%
                 actions:
-                    - sylius.payum.payment_sense.action.capture_payment_using_credit_card
                     - sylius.payum.action.payment_status
-                    - sylius.payum.action.execute_same_request_with_payment_details
+                    - store.payment_sense.action.payment_status
+                    - store.payment_sense.action.capture_payment
+                    - store.payment_sense.action.capture_onsite
+                    - store.payment_sense.action.notify
 
         stripe:
             omnipay:
