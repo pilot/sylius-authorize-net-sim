@@ -1,6 +1,6 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\DependencyInjection\Factory\Payment;
+namespace S40\Bundle\PayumBundle\DependencyInjection\Factory\Payment;
 
 use Payum\Bundle\PayumBundle\DependencyInjection\Factory\Payment\AbstractPaymentFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;

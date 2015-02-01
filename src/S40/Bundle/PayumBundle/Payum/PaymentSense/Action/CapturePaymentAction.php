@@ -1,8 +1,8 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\Payum\PaymentSense\Action;
+namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
-use Payum\Bundle\PayumBundle\Security\TokenFactory;
+use Payum\Core\Bridge\Symfony\Security\TokenFactory;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;

@@ -5,34 +5,34 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="store.payment_sense.api"
-                 class="Sylius\Bundle\PayumBundle\Payum\PaymentSense"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Api"
                  abstract="true"
                  public="false"
                 >
             <argument type="collection">
-                <!-- It is template service. The real service will be created by PaydollarDirectClientSidePaymentFactory -->
+                <!-- It is template service. The real service will be created by PaymentSensePaymentFactory -->
             </argument>
         </service>
 
         <service id="store.payment_sense.action.capture_payment"
-                 class="Hypebeast\Bundle\PayumBundle\Payum\PaymentSense\Action\CapturePaymentAction">
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\CapturePaymentAction">
             <argument type="service" id="payum.security.token_factory" />
         </service>
 
         <service id="store.payment_sense.action.capture_onsite"
-                 class="Hypebeast\Bundle\PayumBundle\Payum\PaymentSense\Action\CaptureOnsiteAction"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\CaptureOnsiteAction"
                  public="false"
                 >
         </service>
 
         <service id="store.payment_sense.action.payment_status"
-                 class="Hypebeast\Bundle\PayumBundle\Payum\PaymentSense\Action\StatusAction"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\StatusAction"
                  public="false"
                 >
         </service>
 
         <service id="store.payment_sense.action.notify"
-                 class="Hypebeast\Bundle\PayumBundle\Payum\PaymentSense\Action\NotifyAction"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\NotifyAction"
                  public="false"
                 >
             <argument type="service" id="payum.security.token_storage"/>

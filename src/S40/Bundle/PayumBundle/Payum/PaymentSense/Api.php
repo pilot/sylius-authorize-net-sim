@@ -1,6 +1,6 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\Payum\PaymentSense;
+namespace S40\Bundle\PayumBundle\Payum\PaymentSense;
 
 class Api
 {

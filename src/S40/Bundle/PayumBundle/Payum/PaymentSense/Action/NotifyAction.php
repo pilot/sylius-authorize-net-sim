@@ -1,6 +1,6 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\Payum\PaymentSense\Action;
+namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Payum\Core\Bridge\Symfony\Reply\HttpResponse;

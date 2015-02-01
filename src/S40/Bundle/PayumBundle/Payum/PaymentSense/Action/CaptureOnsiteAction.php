@@ -1,8 +1,8 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\Payum\PaymentSense\Action;
+namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
-use Sylius\Bundle\PayumBundle\Payum\PaymentSense\Api;
+use S40\Bundle\PayumBundle\Payum\PaymentSense\Api;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;

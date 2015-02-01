@@ -24,6 +24,7 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = array(
+            new S40\Bundle\PayumBundle\S40PayumBundle(),
             // Put here your own bundles!
         );
 

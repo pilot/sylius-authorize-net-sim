@@ -14,18 +14,9 @@ namespace Sylius\Bundle\PayumBundle;
 use Sylius\Bundle\ResourceBundle\AbstractResourceBundle;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Sylius\Bundle\PayumBundle\DependencyInjection\Factory\Payment\PaymentSensePaymentFactory;
 
 class SyliusPayumBundle extends AbstractResourceBundle
 {
-    public function build(ContainerBuilder $container)
-    {
-        /** @var $extension PayumExtension */
-        $extension = $container->getExtension('payum');
-
-        $extension->addPaymentFactory(new PaymentSensePaymentFactory());
-    }
-
     /**
      * {@inheritdoc}
      */
