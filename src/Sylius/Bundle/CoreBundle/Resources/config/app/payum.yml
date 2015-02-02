@@ -44,11 +44,12 @@ payum:
                 options:
                     merchant_id: %payment_sense.merchantId%
                     password: %payment_sense.password%
+                    pre_shared_key: %payment_sense.preSharedKey%
                     sandbox: %payum.test_mode%
                 actions:
                     - sylius.payum.action.payment_status
                     - store.payment_sense.action.payment_status
-                    - store.payment_sense.action.capture_payment
+                    - store.payment_sense.action.fill_order_details
                     - store.payment_sense.action.capture_onsite
                     - store.payment_sense.action.notify
 

@@ -35,6 +35,7 @@ parameters:
 
     payment_sense.merchantId: EDITME
     payment_sense.password: EDITME
+    payment_sense.preSharedKey: EDITME
 
     stripe.publishable_key: EDITME
     stripe.secret_key: EDITME

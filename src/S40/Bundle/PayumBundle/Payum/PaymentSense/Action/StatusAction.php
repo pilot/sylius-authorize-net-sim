@@ -1,71 +1,65 @@
 <?php
-
 namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
 use Payum\Core\Action\ActionInterface;
+use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Request\StatusRequestInterface;
-use Symm\BitpayClient\Model\Invoice;
 
 class StatusAction implements ActionInterface
 {
+    const
+        APPROVED = 0,
+        DECLINED = 5,
+        ERROR = 30
+    ;
+
     /**
-     * @param mixed $request
+     * {@inheritDoc}
      *
-     * @throws RequestNotSupportedException if the action dose not support the request.
+     * @param GetStatusInterface $request
      */
     public function execute($request)
     {
-        /** @var $request StatusRequestInterface */
-        if (false == $this->supports($request)) {
-            throw RequestNotSupportedException::createActionNotSupported($this, $request);
-        }
+        RequestNotSupportedException::assertSupports($this, $request);
 
-        $details = new ArrayObject($request->getModel());
+        $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (isset($details['id']) && isset($details['status'])) {
-            switch ($details['status']) {
-                case Invoice::STATUS_NEW:
-                    $request->markNew();
-
-                    return;
-                case Invoice::STATUS_PAID:
-                    $request->markPending();
-                    break;
-                case Invoice::STATUS_CONFIRMED:
-                case Invoice::STATUS_COMPLETE:
-                    $request->markSuccess();
-                    break;
-                case Invoice::STATUS_EXPIRED:
-                case Invoice::STATUS_INVALID:
-                    $request->markCanceled();
-                    break;
-            }
+        if (null === $model['StatusCode']) {
+            $request->markNew();
 
             return;
         }
 
-        $request->markNew();
+        if (self::APPROVED == $model['StatusCode']) {
+            $request->markCaptured();
+
+            return;
+        }
+
+        if (self::DECLINED == $model['StatusCode']) {
+            $request->markCanceled();
+
+            return;
+        }
+
+        if (self::ERROR == $model['StatusCode']) {
+            $request->markFailed();
+
+            return;
+        }
+
+        $request->markUnknown();
     }
 
     /**
-     * @param mixed $request
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function supports($request)
     {
-        if (false == $request instanceof StatusRequestInterface) {
-            return false;
-        }
-
-        $model = $request->getModel();
-
-        if (false == $model instanceof \ArrayAccess) {
-            return false;
-        }
-
-        return isset($model['price']) && isset($model['currency']);
+        return
+            $request instanceof GetStatusInterface &&
+            $request->getModel() instanceof \ArrayAccess
+        ;
     }
 }

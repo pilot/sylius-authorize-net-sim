@@ -3,17 +3,34 @@
 namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
 use S40\Bundle\PayumBundle\Payum\PaymentSense\Api;
+use Payum\Core\Security\GenericTokenFactoryInterface;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
-use Payum\Core\Request\CaptureRequest;
-use Payum\Core\Request\RedirectUrlInteractiveRequest;
-use Symm\BitpayClient\Model\Invoice;
+use Payum\Core\Request\Capture;
+use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Request\GetHttpRequest;
+use Payum\Core\Reply\HttpPostRedirect;
 
+/**
+ * @author Alex Demchenko <pilo.uanic@gmail.com>
+ */
 class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterface
 {
+    /**
+     * @var GenericTokenFactoryInterface
+     */
+    protected $tokenFactory;
+
+    /**
+     * @param GenericTokenFactoryInterface $tokenFactory
+     */
+    public function __construct(GenericTokenFactoryInterface $tokenFactory)
+    {
+        $this->tokenFactory = $tokenFactory;
+    }
+
     /**
      * @var Api
      */
@@ -28,64 +45,49 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
         $this->api = $api;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param Capture $request
+     */
     public function execute($request)
     {
-        /** @var $request CaptureRequest */
-        if (false == $this->supports($request)) {
-            throw RequestNotSupportedException::createActionNotSupported($this, $request);
+        RequestNotSupportedException::assertSupports($this, $request);
+
+        $model = ArrayObject::ensureArrayObject($request->getModel());
+
+        $model['CallbackURL'] = $this->tokenFactory->createNotifyToken(
+            $request->getToken()->getPaymentName(),
+            $request->getFirstModel()
+        )->getTargetUrl();
+
+        if (null != $model['StatusCode']) {
+            return;
         }
 
-        $details = ArrayObject::ensureArrayObject($request->getModel());
+        $httpRequest = new GetHttpRequest;
+        $this->payment->execute($httpRequest);
 
-        if (!isset($details['id'])) {
-            $invoice = $this->api->createInvoice($details->toUnsafeArray());
-            $details->replace($this->invoiceToArray($invoice));
-
-            throw new RedirectUrlInteractiveRequest($invoice->getUrl());
+        //we are back from be2bill site so we have to just update model.
+        if (isset($httpRequest->query['StatusCode'])) {
+            $model->replace($httpRequest->query);
         } else {
-            $invoice = $this->api->getInvoice($details->toUnsafeArray());
-
-            $details->replace($this->invoiceToArray($invoice));
-            $request->setModel($details);
+            throw new HttpPostRedirect(
+                $this->api->getOnsiteUrl(),
+                $this->api->prepareOnsitePayment($model->toUnsafeArray())
+            );
         }
     }
 
-    protected function invoiceToArray(Invoice $invoice)
-    {
-        return [
-            'id'       => $invoice->getId(),
-            'status'   => $invoice->getStatus(),
-            'url'      => $invoice->getUrl(),
-            'btcPrice' => $invoice->getBtcPrice(),
-            'price'    => $invoice->getPrice(),
-            'currency' => $invoice->getCurrency(),
-            'posData'  => $invoice->getPosData(),
-        ];
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function supports($request)
     {
-        if (false == $request instanceof CaptureRequest) {
-            return false;
-        }
-
-        if (false == $request->getModel() instanceof \ArrayAccess) {
-            return false;
-        }
-
-        return $this->isPaymentValid($request->getModel());
-    }
-
-    private function isPaymentValid($details)
-    {
-        if (!isset($details['price']) || empty($details['price'])) {
-            return false;
-        }
-
-        if (!isset($details['currency']) || empty($details['currency'])) {
-            return false;
-        }
-
-        return true;
+        //dump($request); die;
+        return
+            $request instanceof Capture &&
+            $request->getModel() instanceof \ArrayAccess
+        ;
     }
 }

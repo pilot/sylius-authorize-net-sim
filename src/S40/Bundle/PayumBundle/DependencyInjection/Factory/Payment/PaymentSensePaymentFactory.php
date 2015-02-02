@@ -48,6 +48,7 @@ class PaymentSensePaymentFactory extends AbstractPaymentFactory
             ->arrayNode('options')->isRequired()->children()
                 ->scalarNode('merchant_id')->cannotBeEmpty()->end()
                 ->scalarNode('password')->cannotBeEmpty()->end()
+                ->scalarNode('pre_shared_key')->cannotBeEmpty()->end()
                 ->booleanNode('sandbox')->defaultTrue()->end()
             ->end()
         ->end();

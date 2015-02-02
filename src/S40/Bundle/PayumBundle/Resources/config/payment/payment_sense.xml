@@ -14,13 +14,15 @@
             </argument>
         </service>
 
-        <service id="store.payment_sense.action.capture_payment"
-                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\CapturePaymentAction">
+        <service id="store.payment_sense.action.capture_onsite"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\CaptureOnsiteAction"
+                 public="false"
+                >
             <argument type="service" id="payum.security.token_factory" />
         </service>
 
-        <service id="store.payment_sense.action.capture_onsite"
-                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\CaptureOnsiteAction"
+        <service id="store.payment_sense.action.fill_order_details"
+                 class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\FillOrderDetailsAction"
                  public="false"
                 >
         </service>
@@ -35,10 +37,17 @@
                  class="S40\Bundle\PayumBundle\Payum\PaymentSense\Action\NotifyAction"
                  public="false"
                 >
-            <argument type="service" id="payum.security.token_storage"/>
             <argument type="service" id="sylius.repository.payment" />
+            <argument type="service" id="event_dispatcher" />
             <argument type="service" id="sylius.manager.payment" />
             <argument type="service" id="sm.factory" />
+            <argument>order</argument>
+
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
+
+            <tag name="payum.action" factory="payment_sense" />
         </service>
     </services>
 </container>
