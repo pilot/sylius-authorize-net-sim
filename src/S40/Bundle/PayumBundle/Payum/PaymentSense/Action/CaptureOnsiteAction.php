@@ -12,6 +12,7 @@ use Payum\Core\Request\Capture;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Reply\HttpPostRedirect;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @author Alex Demchenko <pilo.uanic@gmail.com>
@@ -24,11 +25,17 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
     protected $tokenFactory;
 
     /**
+     * @var Session
+     */
+    protected $session;
+
+    /**
      * @param GenericTokenFactoryInterface $tokenFactory
      */
-    public function __construct(GenericTokenFactoryInterface $tokenFactory)
+    public function __construct(GenericTokenFactoryInterface $tokenFactory, Session $session)
     {
         $this->tokenFactory = $tokenFactory;
+        $this->session = $session;
     }
 
     /**
@@ -60,6 +67,8 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
             $request->getToken()->getPaymentName(),
             $request->getFirstModel()
         )->getTargetUrl();
+        $model['AfterUrl'] = $request->getToken()->getAfterUrl();
+        $this->session->set('afterUrl', $request->getToken()->getAfterUrl());
 
         if (null != $model['StatusCode']) {
             return;
