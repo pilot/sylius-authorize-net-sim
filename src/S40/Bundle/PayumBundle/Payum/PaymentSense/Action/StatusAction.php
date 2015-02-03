@@ -8,12 +8,6 @@ use Payum\Core\Exception\RequestNotSupportedException;
 
 class StatusAction implements ActionInterface
 {
-    const
-        APPROVED = 0,
-        DECLINED = 5,
-        ERROR = 30
-    ;
-
     /**
      * {@inheritDoc}
      *
@@ -25,31 +19,30 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (null === $model['StatusCode']) {
-            $request->markNew();
-
-            return;
+        switch ($model['StatusCode']) {
+            case 0:
+                $request->markCaptured();
+                break;
+            case 4:
+                $request->markFailed();
+                break;
+            case 5:
+                $request->markFailed();
+                break;
+            case 20:
+                if ($model['PreviousStatusCode'] == 0) {
+                    $request->markCaptured();
+                } else {
+                    $request->markFailed();
+                }
+                break;
+            case 30:
+                $request->markFailed();
+                break;
+            default:
+                $request->markUnknown();
+                break;
         }
-
-        if (self::APPROVED == $model['StatusCode']) {
-            $request->markCaptured();
-
-            return;
-        }
-
-        if (self::DECLINED == $model['StatusCode']) {
-            $request->markCanceled();
-
-            return;
-        }
-
-        if (self::ERROR == $model['StatusCode']) {
-            $request->markFailed();
-
-            return;
-        }
-
-        $request->markUnknown();
     }
 
     /**

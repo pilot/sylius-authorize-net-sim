@@ -19,7 +19,9 @@ class FillOrderDetailsAction implements ActionInterface
         $order = $request->getOrder();
         $divisor = pow(10, $order->getCurrencyDigitsAfterDecimalPoint());
 
-        $details = array();
+        $details = $order->getDetails();
+        echo 'order';
+        die(dump($details));
         $details['Amount'] = $order->getTotalAmount();
         $details['OrderID'] = $order->getNumber();
         $details['OrderDescription'] = $order->getDescription();

@@ -51,15 +51,41 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
      * @param Capture $request
      */
     public function execute($request)
-    {
+    {die('ku');
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
+        $token = $request->getToken();
+        $payment = $request->getFirstModel();
+        // $order = $payment->getOrder();
+        // $details = $payment->getDetails();
+        //
+        // if (!isset($details['Amount'])) {
+        //     $details = array();
+        //     $details['Amount'] = $order->getTotal();
+        //     $details['OrderID'] = $order->getNumber();
+        //     $details['OrderDescription'] = '';
+        //     $details['EmailAddress'] = $order->getEmail();
+        //     $details['CustomerName'] = '';
+        //     $details['Address1'] = '';
+        //     $details['Address2'] = '';
+        //     $details['Address3'] = '';
+        //     $details['Address4'] = '';
+        //     $details['City'] = '';
+        //     $details['State'] = '';
+        //     $details['PostCode'] = '';
+        //     $details['CountryCode'] = '';
+        //     $details['CurrencyCode'] = $this->getNumberCurrencyCode($payment->getOrder()->getCurrency());
+        //     $details['PhoneNumber'] = '';
+        //
+        //     $payment->setDetails($details);
+        // }
 
         $model['CallbackURL'] = $this->tokenFactory->createNotifyToken(
-            $request->getToken()->getPaymentName(),
-            $request->getFirstModel()
+            $token->getPaymentName(),
+            $payment
         )->getTargetUrl();
+        $model['AfterUrl'] = $token->getAfterUrl();
 
         if (null != $model['StatusCode']) {
             return;
@@ -68,7 +94,7 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
         $httpRequest = new GetHttpRequest;
         $this->payment->execute($httpRequest);
 
-        //we are back from be2bill site so we have to just update model.
+        //we are back from PaymentSense site so we have to just update model.
         if (isset($httpRequest->query['StatusCode'])) {
             $model->replace($httpRequest->query);
         } else {
@@ -84,10 +110,20 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
      */
     public function supports($request)
     {
-        //dump($request); die;
         return
             $request instanceof Capture &&
             $request->getModel() instanceof \ArrayAccess
         ;
+    }
+
+    protected function getNumberCurrencyCode($currency)
+    {
+        $currencies = array(
+            'EUR' => 978,
+            'USD' => 840,
+            'GBP' => 826,
+        );
+
+        return $currencies[$currency];
     }
 }

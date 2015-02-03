@@ -49,8 +49,8 @@ payum:
                 actions:
                     - sylius.payum.action.payment_status
                     - store.payment_sense.action.payment_status
-                    - store.payment_sense.action.fill_order_details
                     - store.payment_sense.action.capture_onsite
+                    - store.payment_sense.action.fill_order_details
                     - store.payment_sense.action.notify
 
         stripe:
