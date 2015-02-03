@@ -33,7 +33,7 @@ class FillOrderDetailsAction implements ActionInterface
         $details['State'] = '';
         $details['PostCode'] = '';
         $details['CountryCode'] = '';
-        $details['CurrencyCode'] = 826;
+        $details['CurrencyCode'] = $this->getNumberCurrencyCode($order->getCurrency());
         $details['PhoneNumber'] = '';
 
         $order->setDetails($details);
@@ -45,5 +45,16 @@ class FillOrderDetailsAction implements ActionInterface
     public function supports($request)
     {
         return $request instanceof FillOrderDetails;
+    }
+
+    protected function getNumberCurrencyCode($currency)
+    {
+        $currencies = array(
+            'EUR' => 978,
+            'USD' => 840,
+            'GBP' => 826,
+        );
+
+        return $currencies[$currency];
     }
 }
