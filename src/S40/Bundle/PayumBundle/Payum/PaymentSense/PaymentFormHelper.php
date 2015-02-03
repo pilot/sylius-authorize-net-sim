@@ -75,35 +75,35 @@ class TransactionResult
     {
         $this->m_szCrossReference = $szCrossReference;
     }
-public function getCardType()
+    public function getCardType()
     {
         return $this->m_szCardType;
     }
-public function setCardType($szCardType)
+    public function setCardType($szCardType)
     {
         $this->m_szCardType = $szCardType;
     }
-public function getCardClass()
+    public function getCardClass()
     {
         return $this->m_szCardClass;
     }
-public function setCardClass($szCardClass)
+    public function setCardClass($szCardClass)
     {
         $this->m_szCardClass = $szCardClass;
     }
-public function getCardIssuer()
+    public function getCardIssuer()
     {
         return $this->m_szCardIssuer;
     }
-public function setCardIssuer($szCardIssuer)
+    public function setCardIssuer($szCardIssuer)
     {
         $this->m_szCardIssuer = $szCardIssuer;
     }
-public function getCardIssuerCountryCode()
+    public function getCardIssuerCountryCode()
     {
         return $this->m_szCardIssuerCountryCode;
     }
-public function setCardIssuerCountryCode($szCardIssuerCountryCode)
+    public function setCardIssuerCountryCode($szCardIssuerCountryCode)
     {
         $this->m_szCardIssuerCountryCode = $szCardIssuerCountryCode;
     }
@@ -243,7 +243,37 @@ public function setCardIssuerCountryCode($szCardIssuerCountryCode)
     {
         $this->m_szPhoneNumber = $szPhoneNumber;
     }
-
+    public function __toArray()
+    {
+        return array(
+            'StatusCode' => $this->m_nStatusCode,
+            'Message' => $this->m_szMessage,
+            'PreviousStatusCode' => $this->m_nPreviousStatusCode,
+            'PreviousMessage' => $this->m_szPreviousMessage,
+            'CrossReference' => $this->m_szCrossReference,
+            'CardType' => $this->m_szCardType,
+            'CardClass' => $this->m_szCardClass,
+            'CardIssuer' => $this->m_szCardIssuer,
+            'CardIssuerCountryCode' => $this->m_szCardIssuerCountryCode,
+            'Amount' => $this->m_nAmount,
+            'CurrencyCode' => $this->m_nCurrencyCode,
+            'OrderID' => $this->m_szOrderID,
+            'TransactionType' => $this->m_szTransactionType,
+            'TransactionDateTime' => $this->m_szTransactionDateTime,
+            'OrderDescription' => $this->m_szOrderDescription,
+            'CustomerName' => $this->m_szCustomerName,
+            'Address1' => $this->m_szAddress1,
+            'Address2' => $this->m_szAddress2,
+            'Address3' => $this->m_szAddress3,
+            'Address4' => $this->m_szAddress4,
+            'City' => $this->m_szCity,
+            'State' => $this->m_szState,
+            'PostCode' => $this->m_szPostCode,
+            'CountryCode' => $this->m_nCountryCode,
+            'EmailAddress' => $this->m_szEmailAddress,
+            'PhoneNumber' => $this->m_szPhoneNumber,
+        );
+    }
 }
 
 class PaymentFormHelper
@@ -695,8 +725,8 @@ class PaymentFormHelper
                                                 $szResultDeliveryMethod,
                                                 $szServerResultURL,
                                                 $szPaymentFormDisplaysResult,
-                                                 $szPreSharedKey,
-                                                 $szHashMethod)
+                                                $szPreSharedKey,
+                                                $szHashMethod)
     {
         $szReturnString = '';
 

@@ -43,6 +43,9 @@
             <argument type="service" id="sm.factory" />
             <argument>order</argument>
 
+            <call method="setApi">
+                <argument type="service" id="payum.context.payment_sense.api" on-invalid="null" strict="false" />
+            </call>
             <call method="setRequest">
                 <argument type="service" id="request" on-invalid="null" strict="false" />
             </call>
