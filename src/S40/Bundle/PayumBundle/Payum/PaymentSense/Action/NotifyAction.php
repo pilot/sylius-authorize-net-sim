@@ -9,6 +9,8 @@ use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\Notify;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Exception\UnsupportedApiException;
+use Payum\Core\ApiAwareInterface;
+use Payum\Core\Bridge\Spl\ArrayObject;
 use SM\Factory\FactoryInterface;
 use Sylius\Bundle\PayumBundle\Payum\Action\AbstractPaymentStateAwareAction;
 use Sylius\Bundle\PayumBundle\Payum\Request\GetStatus;
@@ -23,7 +25,7 @@ use S40\Bundle\PayumBundle\Payum\PaymentSense\PaymentFormHelper;
 /**
  * @author Alex Demchenko <pilo.uanic@gmail.com>
  */
-class NotifyAction extends AbstractPaymentStateAwareAction
+class NotifyAction extends AbstractPaymentStateAwareAction implements ApiAwareInterface
 {
     /**
     * @var Request
@@ -99,26 +101,32 @@ class NotifyAction extends AbstractPaymentStateAwareAction
             throw RequestNotSupportedException::createActionNotSupported($this, $request);
         }
 
+        $model = ArrayObject::ensureArrayObject($request->getModel());
+
         $this->payment->execute($httpRequest = new GetHttpRequest());
-        $details = $httpRequest->query;
-dump($this->api->getResultValidationSuccessful($details));
-die;
-        if (empty($details['OrderID'])) {
+
+        // check that payment status and fetch details from the PaymentSense
+        $this->api->getResultValidationSuccessful($httpRequest->query);
+        $details = $this->api->transactionResult;
+dump($this->httpRequest->getSession());
+dump($model);
+die(dump($details));
+        if (empty((int)$details->getOrderID())) {
             throw new BadRequestHttpException('Order id cannot be guessed');
         }
 
-        $payment = $this->paymentRepository->findOneBy(array($this->identifier => (int)$details['OrderID']));
+        $payment = $this->paymentRepository->findOneBy(array($this->identifier => (int)$details->getOrderID()));
 
         if (null === $payment) {
             throw new BadRequestHttpException('Paymenet cannot be retrieved.');
         }
 
-        // if (intval(strval($details['Amount']*100)) !== $payment->getAmount()) {
-        //     throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
-        // }
+        if (intval(strval($details->getAmount())) !== $payment->getAmount()) {
+            throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
+        }
 
         // Actually update payment details
-        $details = array_merge($payment->getDetails(), $details);
+        $details = array_merge($payment->getDetails(), $details->__toArray());
         $payment->setDetails($details);
 
         $status = new GetStatus($payment);
@@ -130,7 +138,7 @@ die;
 
         $this->objectManager->flush();
 
-        //throw new HttpResponse(new Response('OK', 200));
+        throw new HttpResponse(new Response('OK', 200));
     }
 
     /**
