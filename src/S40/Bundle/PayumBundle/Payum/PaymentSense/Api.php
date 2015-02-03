@@ -6,6 +6,10 @@ use S40\Bundle\PayumBundle\Payum\PaymentSense\PaymentFormHelper;
 
 class Api
 {
+    public $transactionResult = null;
+
+    public $validateErrorMessage = '';
+
     protected $options;
 
     public function __construct(array $options)
@@ -196,8 +200,8 @@ class Api
             'SHA1',
             $query,
             $this->getPaymentFormResultHandler(),
-            null,
-            ''
+            $this->transactionResult,
+            $this->validateErrorMessage
         );
     }
 }
