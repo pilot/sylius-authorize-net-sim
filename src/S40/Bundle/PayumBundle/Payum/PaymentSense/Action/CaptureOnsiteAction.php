@@ -31,6 +31,7 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
 
     /**
      * @param GenericTokenFactoryInterface $tokenFactory
+     * @param Session $session
      */
     public function __construct(GenericTokenFactoryInterface $tokenFactory, Session $session)
     {
@@ -67,8 +68,7 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
             $request->getToken()->getPaymentName(),
             $request->getFirstModel()
         )->getTargetUrl();
-        $model['AfterUrl'] = $request->getToken()->getAfterUrl();
-        $this->session->set('afterUrl', $request->getToken()->getAfterUrl());
+        $this->session->set('AfterUrl', $request->getToken()->getAfterUrl());
 
         if (null != $model['StatusCode']) {
             return;
@@ -77,7 +77,7 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
         $httpRequest = new GetHttpRequest;
         $this->payment->execute($httpRequest);
 
-        //we are back from be2bill site so we have to just update model.
+        //we are back from PaymentSense site so we have to just update model.
         if (isset($httpRequest->query['StatusCode'])) {
             $model->replace($httpRequest->query);
         } else {

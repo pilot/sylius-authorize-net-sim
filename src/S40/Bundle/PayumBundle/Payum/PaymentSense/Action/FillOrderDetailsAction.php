@@ -33,7 +33,7 @@ class FillOrderDetailsAction implements ActionInterface
         $details['State'] = '';
         $details['PostCode'] = '';
         $details['CountryCode'] = '';
-        $details['CurrencyCode'] = $this->getNumberCurrencyCode($order->getCurrency());
+        $details['CurrencyCode'] = $this->getNumberCurrencyCode($order->getCurrencyCode());
         $details['PhoneNumber'] = '';
 
         $order->setDetails($details);

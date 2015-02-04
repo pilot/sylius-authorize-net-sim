@@ -3,20 +3,17 @@
 namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
+
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\Notify;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\ApiAwareInterface;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use SM\Factory\FactoryInterface;
 use Sylius\Bundle\PayumBundle\Payum\Action\AbstractPaymentStateAwareAction;
 use Sylius\Bundle\PayumBundle\Payum\Request\GetStatus;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use S40\Bundle\PayumBundle\Payum\PaymentSense\Api;
@@ -38,11 +35,6 @@ class NotifyAction extends AbstractPaymentStateAwareAction implements ApiAwareIn
     protected $paymentRepository;
 
     /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    /**
      * @var ObjectManager
      */
     protected $objectManager;
@@ -57,10 +49,11 @@ class NotifyAction extends AbstractPaymentStateAwareAction implements ApiAwareIn
      */
     protected $api;
 
+    protected $tokenStorage;
+
 
     public function __construct(
         RepositoryInterface $paymentRepository,
-        EventDispatcherInterface $eventDispatcher,
         ObjectManager $objectManager,
         FactoryInterface $factory,
         $identifier
@@ -68,7 +61,6 @@ class NotifyAction extends AbstractPaymentStateAwareAction implements ApiAwareIn
         parent::__construct($factory);
 
         $this->paymentRepository = $paymentRepository;
-        $this->eventDispatcher   = $eventDispatcher;
         $this->objectManager     = $objectManager;
         $this->identifier        = $identifier;
     }
@@ -101,16 +93,12 @@ class NotifyAction extends AbstractPaymentStateAwareAction implements ApiAwareIn
             throw RequestNotSupportedException::createActionNotSupported($this, $request);
         }
 
-        $model = ArrayObject::ensureArrayObject($request->getModel());
-
         $this->payment->execute($httpRequest = new GetHttpRequest());
 
         // check that payment status and fetch details from the PaymentSense
         $this->api->getResultValidationSuccessful($httpRequest->query);
         $details = $this->api->transactionResult;
-dump($this->httpRequest->getSession());
-dump($model);
-die(dump($details));
+
         if (empty((int)$details->getOrderID())) {
             throw new BadRequestHttpException('Order id cannot be guessed');
         }
@@ -121,9 +109,10 @@ die(dump($details));
             throw new BadRequestHttpException('Paymenet cannot be retrieved.');
         }
 
-        if (intval(strval($details->getAmount())) !== $payment->getAmount()) {
-            throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
-        }
+        // @todo: check that sylius payment amount contain tax
+        // if (intval(strval($details->getAmount())) !== $payment->getAmount()) {
+        //     throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
+        // }
 
         // Actually update payment details
         $details = array_merge($payment->getDetails(), $details->__toArray());
@@ -138,7 +127,10 @@ die(dump($details));
 
         $this->objectManager->flush();
 
-        throw new HttpResponse(new Response('OK', 200));
+        // mark status as redirect after
+        $this->httpRequest->getSession()->set('StatusCode', $details['StatusCode']);
+
+        throw new HttpRedirect($this->httpRequest->getSession()->get('AfterUrl'));
     }
 
     /**

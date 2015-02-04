@@ -1,18 +1,24 @@
 <?php
+
 namespace S40\Bundle\PayumBundle\Payum\PaymentSense\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class StatusAction implements ActionInterface
 {
-    const
-        APPROVED = 0,
-        DECLINED = 5,
-        ERROR = 30
-    ;
+    /**
+     * @var Session
+     */
+    protected $session;
+
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+    }
 
     /**
      * {@inheritDoc}
@@ -25,31 +31,43 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (null === $model['StatusCode']) {
+        // to control payment status over steps
+        if ($this->session->has('StatusCode')) {
+            $model['StatusCode'] = $this->session->get('StatusCode');
+
+            $this->session->remove('StatusCode');
+        }
+
+        if (is_null($model['StatusCode'])) {
             $request->markNew();
 
             return;
         }
 
-        if (self::APPROVED == $model['StatusCode']) {
+        if (0 === $model['StatusCode']) {
             $request->markCaptured();
 
             return;
         }
 
-        if (self::DECLINED == $model['StatusCode']) {
-            $request->markCanceled();
-
-            return;
-        }
-
-        if (self::ERROR == $model['StatusCode']) {
+        if (in_array($model['StatusCode'], [4, 5, 30])) {
             $request->markFailed();
 
             return;
         }
 
-        $request->markUnknown();
+        if (20 == $model['StatusCode']) {
+            if ($model['PreviousStatusCode'] == 0) {
+                    $request->markCaptured();
+            } else {
+                    $request->markFailed();
+            }
+
+            return;
+        }
+
+        $request->markFailed();
+        echo 'failed:'; die(dump($model['StatusCode']));
     }
 
     /**
