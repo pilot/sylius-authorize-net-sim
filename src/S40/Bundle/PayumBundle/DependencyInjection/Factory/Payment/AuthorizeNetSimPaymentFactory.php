@@ -45,9 +45,11 @@ class AuthorizeNetSimPaymentFactory extends AbstractPaymentFactory
         parent::addConfiguration($builder);
 
         $builder->children()
-            ->scalarNode('login_id')->isRequired()->cannotBeEmpty()->end()
-            ->scalarNode('transaction_key')->isRequired()->cannotBeEmpty()->end()
-            ->booleanNode('sandbox')->defaultTrue()->end()
+            ->arrayNode('options')->isRequired()->children()
+                ->scalarNode('login_id')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('transaction_key')->isRequired()->cannotBeEmpty()->end()
+                ->booleanNode('sandbox')->defaultTrue()->end()
+            ->end()
         ->end();
     }
 

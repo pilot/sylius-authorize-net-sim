@@ -21,7 +21,7 @@ payum:
                 transaction_key: %authorize.transactionKey%
                 sandbox: %payum.test_mode%
 
-        authorize_sim:
+        authorize_net_sim:
             authorize_net_sim:
                 options:
                     login_id: %authorize.apiLoginId%

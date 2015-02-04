@@ -1,6 +1,6 @@
 <?php
 
-namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Action;
+namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action;
 
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\ApiAwareInterface;
@@ -10,11 +10,17 @@ use Payum\Core\Request\Capture;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Reply\HttpPostRedirect;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Api;
 
 class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterface
 {
+    /**
+    * @var Request
+    */
+    protected $httpRequest;
+
     /**
      * @var AuthorizeNetAIM
      */
@@ -26,9 +32,9 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
     protected $session;
 
     /**
-     * @param Session $session
+     * @param SessionInterface $session
      */
-    public function __construct(Session $session)
+    public function __construct(SessionInterface $session)
     {
         $this->session = $session;
     }
@@ -43,6 +49,14 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
         }
 
         $this->api = $api;
+    }
+
+    /**
+    * @param Request $request
+    */
+    public function setRequest(Request $request = null)
+    {
+        $this->httpRequest = $request;
     }
 
     /**

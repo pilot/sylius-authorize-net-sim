@@ -1,6 +1,6 @@
 <?php
 
-namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Action;
+namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Payum\Core\Exception\RequestNotSupportedException;

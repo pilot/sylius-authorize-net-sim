@@ -1,6 +1,6 @@
 <?php
 
-namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Action;
+namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\GetStatusInterface;
@@ -15,7 +15,7 @@ class StatusAction implements ActionInterface
      */
     protected $session;
 
-    public function __construct(Session $session)
+    public function __construct(SessionInterface $session)
     {
         $this->session = $session;
     }

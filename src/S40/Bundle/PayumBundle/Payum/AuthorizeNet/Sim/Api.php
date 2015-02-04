@@ -9,6 +9,21 @@ class Api extends \AuthorizeNetSIM
 {
     protected $sandbox = true;
 
+    public function __construct(array $options)
+    {
+        $this->options = $options;
+    }
+
+    public function getLoginId()
+    {
+        return $this->options['login_id'];
+    }
+
+    public function getTransactionLKey()
+    {
+        return $this->options['transaction_key'];
+    }
+
     public function setSandbox($sandbox)
     {
         $this->sandbox = $sandbox;
@@ -34,15 +49,15 @@ class Api extends \AuthorizeNetSIM
         $fpSequence = rand(1, 1000);
         $time = time();
         $fpHash = \AuthorizeNetSIM_Form::getFingerprint(
-            $this->api_login_id,
-            $this->md5_setting,
+            $this->getLoginId(),
+            $this->getTransactionLKey(),
             $params['x_amount'],
             $fpSequence,
             $time
         );
 
         $supportedParams = array(
-            'x_login' => $this->api_login_id,
+            'x_login' => $this->getLoginId(),
             'x_amount' => null,
             'x_description' => null,
             'x_invoice_num' => null,

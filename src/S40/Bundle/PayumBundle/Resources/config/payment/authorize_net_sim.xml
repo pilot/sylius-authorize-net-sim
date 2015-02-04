@@ -14,11 +14,15 @@
             <argument/>
         </service>
 
-        <service id="store.authorize_net_sim.action.capture"
+        <service id="store.authorize_net_sim.action.capture_onsite"
                  class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\CaptureOnsiteAction"
                  public="false"
                 >
             <argument type="service" id="session" />
+
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
         </service>
 
         <service id="store.authorize_net_sim.action.fill_order_details"
@@ -27,14 +31,14 @@
                 >
         </service>
 
-        <service id="store.authorize_net_aim.action.status"
+        <service id="store.authorize_net_sim.action.payment_status"
                  class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\StatusAction"
                  public="false"
                 >
             <argument type="service" id="session" />
         </service>
 
-        <service id="sylius.payum.authorize.action.notify"
+        <service id="store.authorize_net_sim.action.notify"
                  class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\NotifyAction"
                  public="false"
                 >
