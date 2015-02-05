@@ -17,12 +17,6 @@
                                http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="sylius.payum.authorize.action.capture_payment_using_sim.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\CapturePaymentUsingSimAction</parameter>
-        <parameter key="sylius.payum.authorize.action.notify.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\NotifyAction</parameter>
-        <parameter key="sylius.payum.authorize.action.payment_status.class">Sylius\Bundle\PayumBundle\Payum\Authorize\Action\StatusAction</parameter>
-
-        <parameter key="sylius.payum.payment_sense.action.capture_payment_using_credit_card.class">Sylius\Bundle\PayumBundle\Payum\PaymentSense\Action\CapturePaymentUsingCreditCardAction</parameter>
-
         <parameter key="sylius.payum.paypal.action.capture_payment_using_express_checkout.class">Sylius\Bundle\PayumBundle\Payum\Paypal\Action\CapturePaymentUsingExpressCheckoutAction</parameter>
 
         <parameter key="sylius.payum.stripe.action.capture_payment_using_credit_card.class">Sylius\Bundle\PayumBundle\Payum\Stripe\Action\CapturePaymentUsingCreditCardAction</parameter>
@@ -41,45 +35,6 @@
     </parameters>
 
     <services>
-        <!-- Authorize.Net -->
-        <service id="sylius.payum.authorize.action.capture_payment_using_sim" class="%sylius.payum.authorize.action.capture_payment_using_sim.class%" public="false">
-            <call method="setRequest">
-                <argument type="service" id="request" on-invalid="null" strict="false" />
-            </call>
-
-            <tag name="payum.action" factory="authorize_net_sim" />
-        </service>
-
-        <service id="sylius.payum.authorize.action.notify" class="%sylius.payum.authorize.action.notify.class%" public="false">
-            <argument type="service" id="sylius.repository.payment" />
-            <argument type="service" id="event_dispatcher" />
-            <argument type="service" id="sylius.manager.payment" />
-            <argument type="service" id="sm.factory" />
-            <argument>id</argument>
-            <argument type="service" id="session" />
-            <argument type="service" id="translator" />
-
-            <call method="setRequest">
-                <argument type="service" id="request" on-invalid="null" strict="false" />
-            </call>
-
-            <tag name="payum.action" factory="authorize_net_sim" />
-        </service>
-
-        <service id="sylius.payum.authorize.action.payment_status" class="%sylius.payum.authorize.action.payment_status.class%" public="false">
-            <tag name="payum.action" all="true" />
-        </service>
-
-        <!-- PaymentSense -->
-        <service id="sylius.payum.payment_sense.action.capture_payment_using_credit_card" class="%sylius.payum.payment_sense.action.capture_payment_using_credit_card.class%" public="false">
-            <argument type="service" id="payum.security.token_factory" />
-            <call method="setRequest">
-                <argument type="service" id="request" on-invalid="null" strict="false" />
-            </call>
-
-            <tag name="payum.action" factory="omnipay" />
-        </service>
-
         <!-- PayPal -->
         <service id="sylius.payum.paypal.action.capture_payment_using_express_checkout" class="%sylius.payum.paypal.action.capture_payment_using_express_checkout.class%" public="false">
             <argument type="service" id="payum.security.token_factory" />
