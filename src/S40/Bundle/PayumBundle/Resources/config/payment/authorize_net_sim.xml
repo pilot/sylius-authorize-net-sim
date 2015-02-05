@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="store.authorize_net_sim.api"
+                 class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Api"
+                 abstract="true"
+                 public="false"
+                >
+            <!-- It is template service. The real service will be created by Be2BillPaymentFactory -->
+            <argument/>
+            <argument/>
+        </service>
+
+        <service id="store.authorize_net_sim.action.capture_onsite"
+                 class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\CaptureOnsiteAction"
+                 public="false"
+                >
+            <argument type="service" id="session" />
+
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
+        </service>
+
+        <service id="store.authorize_net_sim.action.fill_order_details"
+                 class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\FillOrderDetailsAction"
+                 public="false"
+                >
+        </service>
+
+        <service id="store.authorize_net_sim.action.payment_status"
+                 class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\StatusAction"
+                 public="false"
+                >
+            <argument type="service" id="session" />
+        </service>
+
+        <service id="store.authorize_net_sim.action.notify"
+                 class="S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action\NotifyAction"
+                 public="false"
+                >
+            <argument type="service" id="sylius.repository.payment" />
+            <argument type="service" id="sylius.manager.payment" />
+            <argument type="service" id="sm.factory" />
+            <argument>id</argument>
+
+            <call method="setRequest">
+                <argument type="service" id="request" on-invalid="null" strict="false" />
+            </call>
+
+            <tag name="payum.action" factory="authorize_net_sim" />
+        </service>
+    </services>
+</container>

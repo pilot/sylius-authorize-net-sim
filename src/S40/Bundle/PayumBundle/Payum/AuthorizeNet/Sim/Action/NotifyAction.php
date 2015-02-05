@@ -1,9 +1,8 @@
 <?php
 
-namespace Sylius\Bundle\PayumBundle\Payum\Authorize\Action;
+namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\Notify;
@@ -12,12 +11,8 @@ use SM\Factory\FactoryInterface;
 use Sylius\Bundle\PayumBundle\Payum\Action\AbstractPaymentStateAwareAction;
 use Sylius\Bundle\PayumBundle\Payum\Request\GetStatus;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * @author Alex Demchenko <pilo.uanic@gmail.com>
@@ -35,11 +30,6 @@ class NotifyAction extends AbstractPaymentStateAwareAction
     protected $paymentRepository;
 
     /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
-    /**
      * @var ObjectManager
      */
     protected $objectManager;
@@ -49,34 +39,18 @@ class NotifyAction extends AbstractPaymentStateAwareAction
      */
     protected $identifier;
 
-    /**
-    * @var SessionInterface
-    */
-    protected $session;
-
-    /**
-    * @var TranslatorInterface
-    */
-    protected $translator;
-
 
     public function __construct(
         RepositoryInterface $paymentRepository,
-        EventDispatcherInterface $eventDispatcher,
         ObjectManager $objectManager,
         FactoryInterface $factory,
-        $identifier,
-        SessionInterface $session,
-        TranslatorInterface $translator
+        $identifier
     ) {
         parent::__construct($factory);
 
         $this->paymentRepository = $paymentRepository;
-        $this->eventDispatcher   = $eventDispatcher;
         $this->objectManager     = $objectManager;
         $this->identifier        = $identifier;
-        $this->session           = $session;
-        $this->translator        = $translator;
     }
 
     /**
@@ -111,7 +85,7 @@ class NotifyAction extends AbstractPaymentStateAwareAction
             throw new BadRequestHttpException('Paymenet cannot be retrieved.');
         }
 
-        if (intval(strval($details['x_amount']*100)) !== $payment->getAmount()) {
+        if (intval(strval($details['x_amount'] * 100)) !== $payment->getAmount()) {
             throw new BadRequestHttpException('Request amount cannot be verified against payment amount.');
         }
 
@@ -128,9 +102,10 @@ class NotifyAction extends AbstractPaymentStateAwareAction
 
         $this->objectManager->flush();
 
-        $this->addFlash($nextState);
+        // mark status as redirect after
+        $this->httpRequest->getSession()->set('x_response_code', $details['x_response_code']);
 
-        throw new HttpRedirect($this->httpRequest->getSchemeAndHttpHost());
+        throw new HttpRedirect($this->httpRequest->getSession()->get('after_url'));
     }
 
     /**
@@ -139,46 +114,5 @@ class NotifyAction extends AbstractPaymentStateAwareAction
     public function supports($request)
     {
         return $request instanceof Notify;
-    }
-
-    public function addFlash($state)
-    {
-        switch ($state) {
-            case 'completed':
-            $type = 'success';
-            $message = 'sylius.checkout.success';
-            break;
-
-            case 'processing':
-            case 'pending':
-            $type = 'notice';
-            $message = 'sylius.checkout.processing';
-            break;
-
-            case 'new':
-            $type = 'notice';
-            $message = 'sylius.checkout.new';
-            break;
-
-            case 'void':
-            $type = 'notice';
-            $message = 'sylius.checkout.canceled';
-            break;
-
-            case 'failed':
-            $type = 'error';
-            $message = 'sylius.checkout.failed';
-            break;
-
-            default:
-            $type = 'error';
-            $message = 'sylius.checkout.unknown';
-            break;
-        }
-
-        return $this->session->getBag('flashes')->add(
-            $type,
-            $this->translator->trans($message, array(), 'flashes')
-        );
     }
 }

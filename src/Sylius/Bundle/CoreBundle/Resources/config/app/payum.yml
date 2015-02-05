@@ -21,6 +21,19 @@ payum:
                 transaction_key: %authorize.transactionKey%
                 sandbox: %payum.test_mode%
 
+        authorize_net_sim:
+            authorize_net_sim:
+                options:
+                    login_id: %authorize.apiLoginId%
+                    transaction_key: %authorize.transactionKey%
+                    sandbox: %payum.test_mode%
+                actions:
+                    - sylius.payum.action.payment_status
+                    - store.authorize_net_sim.action.payment_status
+                    - store.authorize_net_sim.action.fill_order_details
+                    - store.authorize_net_sim.action.capture_onsite
+                    - store.authorize_net_sim.action.notify
+
         payment_sense:
             payment_sense:
                 options:

@@ -1,13 +1,25 @@
 <?php
-namespace Sylius\Bundle\PayumBundle\Payum\Authorize\Action;
+
+namespace S40\Bundle\PayumBundle\Payum\AuthorizeNet\Sim\Action;
 
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class StatusAction implements ActionInterface
 {
+    /**
+     * @var SessionInterface
+     */
+    protected $session;
+
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -18,6 +30,13 @@ class StatusAction implements ActionInterface
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
+
+        // to control payment status over steps
+        if ($this->session->has('x_response_code')) {
+            $model['x_response_code'] = $this->session->get('x_response_code');
+
+            $this->session->remove('x_response_code');
+        }
 
         if (null === $model['x_response_code']) {
             $request->markNew();
