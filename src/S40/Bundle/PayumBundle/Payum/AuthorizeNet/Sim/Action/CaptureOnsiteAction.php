@@ -75,7 +75,7 @@ class CaptureOnsiteAction extends PaymentAwareAction implements ApiAwareInterfac
             return;
         }
 
-        $model['x_relay_url'] = $this->httpRequest->getSchemeAndHttpHost().'/payment/notify/unsafe/authorize_sim';
+        $model['x_relay_url'] = $this->httpRequest->getSchemeAndHttpHost().'/payment/notify/unsafe/authorize_net_sim';
         $model['x_po_num'] = $payment->getId();
         $this->session->set('after_url', $request->getToken()->getAfterUrl());
 
